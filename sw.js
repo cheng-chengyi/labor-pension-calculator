@@ -1,6 +1,6 @@
 // Service Worker for 勞保老年年金試算表
 // 版本控制：每次更新 HTML 後，把版號 +1，使用者下次開啟會自動更新快取
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `labor-pension-calculator-${CACHE_VERSION}`;
 
 // 要快取的核心檔案
