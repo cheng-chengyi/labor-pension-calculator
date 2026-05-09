@@ -2,8 +2,25 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>勞保老年年金試算表，何時請領比較優！</title>
+
+<!-- PWA 設定 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
+<meta name="description" content="勞保老年年金 A vs B 方案試算表，何時請領比較優">
+
+<!-- iOS 支援 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="勞保試算">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- Windows / Android 支援 -->
+<meta name="application-name" content="勞保試算">
+<meta name="msapplication-TileColor" content="#003366">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -1085,6 +1102,59 @@ function forceRecalc() {
     btn.classList.remove('flash');
   }, 1000);
 }
+</script>
+
+<!-- PWA Service Worker 註冊 + 安裝提示 -->
+<script>
+// 註冊 Service Worker(僅在 https 或 localhost 才會運作)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then((reg) => console.log('✅ PWA Service Worker 已啟用'))
+      .catch((err) => console.warn('Service Worker 註冊失敗：', err));
+  });
+}
+
+// 安裝提示按鈕(Android Chrome 會顯示)
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButton();
+});
+
+function showInstallButton() {
+  // 若已有按鈕就不重複建立
+  if (document.getElementById('pwaInstallBtn')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'pwaInstallBtn';
+  btn.textContent = '📱 安裝到桌面';
+  btn.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px; z-index: 999;
+    background: linear-gradient(135deg, #003366, #1976d2);
+    color: white; border: none; padding: 12px 20px;
+    border-radius: 50px; font-size: 14px; font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer;
+  `;
+  btn.onclick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      btn.remove();
+    }
+    deferredPrompt = null;
+  };
+  document.body.appendChild(btn);
+}
+
+// 已安裝後隱藏按鈕
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwaInstallBtn');
+  if (btn) btn.remove();
+  deferredPrompt = null;
+});
 </script>
 </body>
 </html>
