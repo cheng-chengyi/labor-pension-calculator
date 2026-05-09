@@ -117,6 +117,172 @@
   .changelog li {
     line-height: 1.7;
   }
+  /* === 使用者姓名欄位 === */
+  .user-name-wrap {
+    background: linear-gradient(135deg, #fff8e1, #fffde7);
+    border: 1px solid #ffd54f;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .user-name-wrap label {
+    font-weight: bold;
+    color: #5d4037;
+    font-size: 14px;
+    margin: 0;
+  }
+  .user-name-wrap input {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 12px;
+    border: 1px solid #ffb74d;
+    border-radius: 6px;
+    font-size: 15px;
+    background: white;
+  }
+  .user-name-wrap input:focus {
+    outline: none;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+  }
+  .user-name-hint {
+    font-size: 11px;
+    color: #888;
+  }
+
+  /* 列印用標頭(預設隱藏,列印時顯示) */
+  .print-header {
+    display: none;
+  }
+
+  /* === PDF 匯出按鈕樣式 === */
+  .pdf-btn-wrap {
+    text-align: right;
+    margin: 12px 0;
+  }
+  .pdf-btn {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(46, 125, 50, 0.25);
+    transition: all 0.2s;
+  }
+  .pdf-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(46, 125, 50, 0.35);
+  }
+  .pdf-btn:active { transform: translateY(0); }
+  .pdf-btn-hint {
+    display: inline-block;
+    font-size: 10px;
+    color: #888;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* === 列印模式專用樣式 === */
+  @media print {
+    body {
+      background: white !important;
+      padding: 0 !important;
+      font-size: 11pt;
+    }
+    .container {
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+    /* 隱藏不需列印的元素 */
+    .pdf-btn-wrap,
+    .recalc-btn,
+    #pwaInstallBtn,
+    .changelog summary,
+    .user-name-wrap,
+    select,
+    input[type="number"],
+    input[type="text"] {
+      display: none !important;
+    }
+    /* 列印標頭顯示 */
+    .print-header {
+      display: block !important;
+      background: #003366 !important;
+      color: white !important;
+      padding: 8px 14px !important;
+      border-radius: 6px !important;
+      margin: 8px 0 12px 0 !important;
+      text-align: center !important;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    .print-header .name {
+      font-size: 14pt;
+      font-weight: bold;
+      display: inline;
+    }
+    .print-header .date {
+      font-size: 10pt;
+      display: inline;
+      margin-left: 16px;
+      opacity: 0.9;
+    }
+    /* 標題下方分隔線縮短間距 */
+    h1 { margin-bottom: 4px !important; }
+    .author { margin-bottom: 6px !important; padding: 2px 0 !important; }
+    .subtitle { margin-bottom: 8px !important; }
+    .formula-box { margin-bottom: 10px !important; padding: 8px 12px !important; }
+    /* 把 input/select 的值改用唯讀文字呈現 */
+    .input-group::after {
+      content: attr(data-value);
+    }
+    /* 邊框、陰影簡化 */
+    .panel {
+      box-shadow: none !important;
+      border: 1px solid #ccc !important;
+    }
+    .compare, .insurance-cost-box, .formula-box, .disclaimer, .changelog {
+      box-shadow: none !important;
+      border: 1px solid #ccc !important;
+      page-break-inside: avoid;
+    }
+    /* panels 兩個 panel 並排,允許在內部分頁 */
+    .panels {
+      page-break-inside: auto;
+    }
+    /* 重要區塊強制分頁 */
+    .compare {
+      page-break-before: auto;
+    }
+    .disclaimer {
+      page-break-before: avoid;
+    }
+    /* 連結直接顯示文字,不顯示 URL */
+    a[href]::after { content: ""; }
+    /* 顏色保留 */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    /* changelog 強制展開 */
+    details.changelog,
+    details.changelog .changelog-content {
+      display: block !important;
+    }
+    details.changelog summary { display: none !important; }
+    /* 頁面邊距 */
+    @page {
+      margin: 1.5cm 1cm;
+      size: A4;
+    }
+  }
   .subtitle { color: #666; font-size: 13px; margin-bottom: 16px; }
   .formula-box {
     background: #fff8e1;
@@ -348,9 +514,28 @@
   <h1>勞保老年年金試算表，何時請領比較優！</h1>
   <p class="author">
     作者：鄭正一
-    <span class="version-badge">v1.0.1</span>
+    <span class="version-badge">v1.1.1</span>
     <span class="version-date">最後更新：2026-05-09</span>
   </p>
+
+  <!-- 列印時顯示的標頭(平時隱藏) -->
+  <div class="print-header" id="printHeader">
+    <div class="name">試算對象：<span id="printUserName">OOO</span></div>
+    <div class="date">試算日期：<span id="printDate"></span></div>
+  </div>
+
+  <div class="user-name-wrap">
+    <label for="userName">試算對象姓名：</label>
+    <input type="text" id="userName" value="OOO" maxlength="20" placeholder="OOO">
+    <span class="user-name-hint">將顯示於 PDF 報告中</span>
+  </div>
+
+  <div class="pdf-btn-wrap pdf-btn-top">
+    <button onclick="exportPDF()" class="pdf-btn">
+      📄 匯出 PDF / 列印
+    </button>
+    <span class="pdf-btn-hint">點擊後選擇「另存為 PDF」即可保存試算結果</span>
+  </div>
   <p class="subtitle">
     A：資格符合就請領，可能會扣%<br>
     B：想要請領再請領，甚至可加%<br>
@@ -507,6 +692,13 @@
     9. 本試算<strong>不考慮加保於職業工會期間，其他應繳納之工會會費等</strong>。
   </div>
 
+  <div class="pdf-btn-wrap pdf-btn-bottom">
+    <button onclick="exportPDF()" class="pdf-btn">
+      📄 匯出 PDF / 列印
+    </button>
+    <span class="pdf-btn-hint">點擊後選擇「另存為 PDF」即可保存試算結果</span>
+  </div>
+
   <div class="disclaimer">
     <div class="disclaimer-title">⚠️ 免責聲明</div>
     本試算工具僅作為個人退休規劃之參考輔助，所有計算結果均為依目前法規與預設參數進行的<strong>概略推估</strong>，不代表勞保局之正式核定金額。實際給付金額、費率、增減比例及相關規定，悉以勞動部勞工保險局官方公告與最終核定為準。<br>
@@ -516,6 +708,20 @@
   <details class="changelog">
     <summary>📋 版本歷程（點擊展開）</summary>
     <div class="changelog-content">
+      <div class="changelog-item">
+        <div class="changelog-version">v1.1.1 <span class="changelog-date">2026-05-09</span></div>
+        <ul>
+          <li>新增「試算對象姓名」欄位（預設 OOO，可自訂）</li>
+          <li>PDF 匯出時自動帶出姓名與民國紀年日期，作為報告標頭</li>
+        </ul>
+      </div>
+      <div class="changelog-item">
+        <div class="changelog-version">v1.1.0 <span class="changelog-date">2026-05-09</span></div>
+        <ul>
+          <li>新增 PDF 匯出 / 列印功能（頁首、頁尾各一顆按鈕）</li>
+          <li>專用列印樣式：自動隱藏按鈕、把輸入欄位轉為可見文字、A4 邊距優化</li>
+        </ul>
+      </div>
       <div class="changelog-item">
         <div class="changelog-version">v1.0.1 <span class="changelog-date">2026-05-09</span></div>
         <ul>
@@ -1110,6 +1316,65 @@ function forceRecalc() {
     btn.classList.remove('flash');
   }, 1000);
 }
+
+// === PDF 匯出 / 列印功能 ===
+// 列印前把所有 input/select 換成可見文字節點,列印完再還原
+function exportPDF() {
+  // 確保最新試算結果
+  if (typeof calc === 'function') calc();
+
+  // 把姓名與日期填入列印標頭
+  const userName = document.getElementById('userName').value.trim() || 'OOO';
+  document.getElementById('printUserName').textContent = userName;
+  const today = new Date();
+  const rocYear = today.getFullYear() - 1911;
+  const m = today.getMonth() + 1;
+  const d = today.getDate();
+  document.getElementById('printDate').textContent = `${rocYear} 年 ${m} 月 ${d} 日`;
+
+  // 處理 input/select(姓名欄位本身已被 .user-name-wrap 隱藏,跳過)
+  const inputs = document.querySelectorAll('input:not(#userName), select');
+  const replacements = [];
+
+  inputs.forEach(el => {
+    let displayValue = '';
+    if (el.tagName === 'SELECT') {
+      const opt = el.options[el.selectedIndex];
+      displayValue = opt ? opt.text : el.value;
+    } else {
+      displayValue = el.value || el.placeholder || '';
+    }
+
+    // 建立替代用的文字節點
+    const span = document.createElement('span');
+    span.className = 'print-value';
+    span.textContent = displayValue;
+    span.style.cssText = `
+      display: inline-block;
+      padding: 6px 10px;
+      background: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      min-width: 80px;
+      font-family: inherit;
+    `;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({ el, span });
+  });
+
+  // 觸發列印對話框
+  window.print();
+
+  // 列印後(或取消)還原
+  setTimeout(() => {
+    replacements.forEach(({ el, span }) => {
+      el.style.display = '';
+      if (span.parentNode) span.parentNode.removeChild(span);
+    });
+  }, 500);
+}
 </script>
 
 <!-- PWA Service Worker 註冊 + 安裝提示 -->
@@ -1119,7 +1384,9 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js')
       .then((reg) => console.log('✅ PWA Service Worker 已啟用'))
-      .catch((err) => console.warn('Service Worker 註冊失敗：', err));
+      .catch(() => {
+        // 預覽環境或非 PWA 部署環境會失敗,屬正常情況,不顯示警告
+      });
   });
 }
 
